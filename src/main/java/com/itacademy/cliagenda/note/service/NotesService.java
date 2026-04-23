@@ -1,63 +1,47 @@
 package com.itacademy.cliagenda.note.service;
 
-import com.itacademy.cliagenda.infrastructure.sql.dao.SqlDao;
 import com.itacademy.cliagenda.note.model.Note;
-import com.itacademy.cliagenda.note.repository.NotesRepository;
-import com.itacademy.cliagenda.task.model.Task;
+import com.itacademy.cliagenda.note.repository.INoteRepository;
 
 import java.util.List;
 
 public class NotesService {
 
-    private final NotesRepository repo;
-    private final SqlDao dao;
+    private final INoteRepository repo;
 
-    public NotesService(NotesRepository repo) {
+    public NotesService(INoteRepository repo) {
         this.repo = repo;
-        this.dao = SqlDao.getInstance();
-        List<Note> notesFromDb = dao.findAllNotes();
-        repo.addNotes(notesFromDb);
     }
 
-    public Note createNote(String body) {
-        return createNote(body, null);
-    }
-
-    public Note createNote(String body, Task task_fk) {
+    public Note createNote(String body, int taskId) {
         int id = generateNextId();
-        int taskFk = task_fk != null ? task_fk.getId() : 0;
-        Note newNote = new Note(id, body, taskFk);
-        dao.saveNotes(newNote);
-        repo.addIndividualNote(newNote);
+        Note newNote = new Note(id, body, taskId);
+        repo.save(newNote);
         return newNote;
     }
 
     public List<Note> getAllNotes() {
-        return repo.getNotes();
+        return repo.findAll();
     }
 
     public Note findNoteById(int id) {
-        return repo.getNoteById(id);
+        return repo.findById(id);
     }
 
     public void deleteNoteById(int id) {
-        dao.deleteNote(id);
-        repo.removeNoteById(id);
+        repo.deleteById(id);
     }
 
     public void updateNote(Note note) {
-        dao.updateNote(note);
-        repo.removeNoteById(note.getId());
-        repo.addIndividualNote(note);
+        repo.update(note);
     }
 
     public List<Note> getNotesByTaskId(int taskId) {
-        return repo.getNotesByTaskFK(taskId);
+        return repo.findByTaskId(taskId);
     }
 
-
     private int generateNextId() {
-        List<Note> notes = repo.getNotes();
+        List<Note> notes = repo.findAll();
         int maxId = 0;
         for (Note note : notes) {
             if (note.getId() > maxId) {
