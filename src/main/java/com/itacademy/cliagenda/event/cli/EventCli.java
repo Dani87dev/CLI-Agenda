@@ -32,106 +32,111 @@ public class EventCli {
             System.out.println("5 - Delete event");
             System.out.println("0 - Return to App Menu");
 
-            option = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                option = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (option) {
-                case 1:
-                    createEvent();
-                    break;
-                case 2:
-                    listEvents();
-                    break;
-                case 3:
-                    findEvent();
-                    break;
-                case 4:
-                    updateEvent();
-                    break;
-                case 5:
-                    deleteEvent();
-                    break;
-                default:
-                    System.out.println("Incorrect input, try again.");
-                    break;
+                switch (option) {
+                    case 1: createEvent(); break;
+                    case 2: listEvents(); break;
+                    case 3: findEvent(); break;
+                    case 4: updateEvent(); break;
+                    case 5: deleteEvent(); break;
+                    case 0: break;
+                    default: System.out.println("Incorrect input, try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Try again.");
+                scanner.nextLine();
             }
         } while (option != 0);
     }
 
     public void createEvent() {
-        System.out.println("Introduce Event title:");
-        String title = scanner.nextLine();
-        System.out.println("Introduce Event description:");
-        String description = scanner.nextLine();
+        try {
+            System.out.println("Introduce Event title:");
+            String title = scanner.nextLine();
+            System.out.println("Introduce Event description:");
+            String description = scanner.nextLine();
 
-        LocalDateTime dateTime = null;
-        boolean validDate = false;
-        while (!validDate) {
-            System.out.println("Introduce date (yyyy-MM-dd HH:mm):");
-            String dateText = scanner.nextLine();
-            try {
-                dateTime = LocalDateTime.parse(dateText,
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                validDate = true;
-            } catch (Exception e) {
-                System.out.println("Invalid date format. Use the format yyyy-MM-dd HH:mm");
+            LocalDateTime dateTime = null;
+            boolean validDate = false;
+            while (!validDate) {
+                System.out.println("Introduce date (yyyy-MM-dd HH:mm):");
+                String dateText = scanner.nextLine();
+                try {
+                    dateTime = LocalDateTime.parse(dateText,
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                    validDate = true;
+                } catch (Exception e) {
+                    System.out.println("Invalid date format. Use the format yyyy-MM-dd HH:mm");
+                }
             }
-        }
 
-        System.out.println("Recurring? (Y/N):");
-        boolean recurring = scanner.nextLine().equalsIgnoreCase("y");
+            System.out.println("Recurring? (Y/N):");
+            boolean recurring = scanner.nextLine().equalsIgnoreCase("y");
 
-        boolean annualRecurring = false;
-        int recurrenceInterval = 0;
+            boolean annualRecurring = false;
+            int recurrenceInterval = 0;
 
-        if (recurring) {
-            System.out.println("Annual recurring? (Y/N):");
-            annualRecurring = scanner.nextLine().equalsIgnoreCase("y");
-            if (!annualRecurring) {
-                System.out.println("Recurrence interval in months:");
-                recurrenceInterval = Integer.parseInt(scanner.nextLine());
+            if (recurring) {
+                System.out.println("Annual recurring? (Y/N):");
+                annualRecurring = scanner.nextLine().equalsIgnoreCase("y");
+                if (!annualRecurring) {
+                    System.out.println("Recurrence interval in months:");
+                    recurrenceInterval = Integer.parseInt(scanner.nextLine());
+                }
             }
-        }
 
-        Event event = service.createEvent(title, description, dateTime, recurring, annualRecurring, recurrenceInterval);
-        System.out.println("Event \"" + event.getTitle() + "\" created.");
+            Event event = service.createEvent(title, description, dateTime, recurring, annualRecurring, recurrenceInterval);
+            System.out.println("Event \"" + event.getTitle() + "\" created.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     public void listEvents() {
-        List<Event> events = service.getAllEvents();
-        if (events.isEmpty()) {
-            System.out.println("No events found.");
-            return;
-        }
-        for (Event event : events) {
-            List<Task> tasks = taskService.getTasksByEventId(event.getId());
+        try {
+            List<Event> events = service.getAllEvents();
+            if (events.isEmpty()) {
+                System.out.println("No events found.");
+                return;
+            }
+            for (Event event : events) {
+                List<Task> tasks = taskService.getTasksByEventId(event.getId());
 
-            System.out.println("ID: " + event.getId()
-                    + " | " + event.getTitle()
-                    + " | " + event.getDateTimeEvent()
-                    + " | " + (event.isRecurring() ? (event.isAnnualRecurring() ?
-                    "Recurring: yearly" : "Recurring: each "
-                    + event.getRecurrenceInterval() + " months") : "Not recurring")
-                    + " | Tasks: " + tasks.size());
+                System.out.println("ID: " + event.getId()
+                        + " | " + event.getTitle()
+                        + " | " + event.getDateTimeEvent()
+                        + " | " + (event.isRecurring() ? (event.isAnnualRecurring() ?
+                        "Recurring: yearly" : "Recurring: each "
+                        + event.getRecurrenceInterval() + " months") : "Not recurring")
+                        + " | Tasks: " + tasks.size());
 
-            if (!tasks.isEmpty()) {
-                for (Task task : tasks) {
-                    System.out.println("    - " + task.getId() + ": " + task.getBody()
-                            + " (Completed: " + (task.isCompleted() ? "Yes" : "No") + ")");
+                if (!tasks.isEmpty()) {
+                    for (Task task : tasks) {
+                        System.out.println("    - " + task.getId() + ": " + task.getBody()
+                                + " (Completed: " + (task.isCompleted() ? "Yes" : "No") + ")");
+                    }
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     public void findEvent() {
-        System.out.println("Introduce event ID:");
-        try{
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        Event event = service.findEventById(id);
-        if (event == null) {
-            System.out.println("Event not found.");
-        } else {
+        try {
+            System.out.println("Introduce event ID:");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            Event event = service.findEventById(id);
+            if (event == null) {
+                System.out.println("Event not found.");
+                return;
+            }
+
             System.out.println("ID: " + event.getId());
             System.out.println("Title: " + event.getTitle());
             System.out.println("Description: " + event.getDescription());
@@ -160,114 +165,99 @@ public class EventCli {
             } else {
                 System.out.println("\nNo associated tasks.");
             }
-        }
         } catch (Exception e) {
-            System.out.println("Event not found. Try again.");
-            scanner.nextLine();
-        }
-    }
-
-    public void deleteEvent() {
-        try{
-        Event event = null;
-        int id = 0;
-        do {
-            System.out.println("Introduce event ID to delete:");
-            id = scanner.nextInt();
-            scanner.nextLine();
-            event = service.findEventById(id);
-            if (event == null) {
-                System.out.println("Event not found. Try again.");
-            }
-        } while (event == null);
-
-        service.deleteEventById(id);
-        System.out.println("Event deleted.");
-        } catch (Exception e) {
-            System.out.println("Event not found. Try again.");
-            scanner.nextLine();
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     public void updateEvent() {
-        try{
-        System.out.println("Introduce event ID to update:");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-
-        Event event = service.findEventById(id);
-        if (event == null) {
-            System.out.println("Event not found.");
-            return;
-        }
-
-        System.out.println("Current event:");
-        System.out.println("  ID: " + event.getId());
-        System.out.println("  Title: " + event.getTitle());
-        System.out.println("  Description: " + event.getDescription());
-        System.out.println("  Date: " + event.getDateTimeEvent());
-        System.out.println("  Recurring: " + (event.isRecurring() ? "Yes" : "No"));
-        System.out.println();
-
-        System.out.println("Do you want to modify the title? (Y/N):");
-        String modifyTitle = scanner.nextLine();
-        if (modifyTitle.equalsIgnoreCase("y")) {
-            System.out.println("Introduce new title:");
-            String newTitle = scanner.nextLine();
-            event.changeTitle(newTitle);
-        }
-
-        System.out.println("Do you want to modify the description? (Y/N):");
-        String modifyDesc = scanner.nextLine();
-        if (modifyDesc.equalsIgnoreCase("y")) {
-            System.out.println("Introduce new description:");
-            String newDesc = scanner.nextLine();
-            event.changeDescription(newDesc);
-        }
-
-        System.out.println("Do you want to modify the date? (Y/N):");
-        String modifyDate = scanner.nextLine();
-        if (modifyDate.equalsIgnoreCase("y")) {
-            LocalDateTime newDateTime = null;
-            boolean validDate = false;
-            while (!validDate) {
-                System.out.println("Introduce new date (yyyy-MM-dd HH:mm):");
-                String dateText = scanner.nextLine();
-                try {
-                    newDateTime = LocalDateTime.parse(dateText,
-                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                    validDate = true;
-                } catch (Exception e) {
-                    System.out.println("Invalid date format. Use the format yyyy-MM-dd HH:mm");
-                }
-            }
-            event.changeDateEvent(newDateTime);
-        }
-
-        System.out.println("Do you want to modify the recurring status? (Y/N):");
-        String modifyRecurring = scanner.nextLine();
-        if (modifyRecurring.equalsIgnoreCase("y")) {
-            System.out.println("Mark as recurring? (Y/N):");
-            boolean recurring = scanner.nextLine().equalsIgnoreCase("y");
-            event.setRecurring(recurring);
-
-            if (recurring) {
-                System.out.println("Annual recurring? (Y/N):");
-                boolean annualRecurring = scanner.nextLine().equalsIgnoreCase("y");
-                event.setAnnualRecurring(annualRecurring);
-                if (!annualRecurring) {
-                    System.out.println("Recurrence interval in months:");
-                    int recurrenceInterval = Integer.parseInt(scanner.nextLine());
-                    event.setRecurrenceInterval(recurrenceInterval);
-                }
-            }
-        }
-
-        service.updateEvent(event);
-        System.out.println("Event updated successfully.");
-        } catch (Exception e) {
-            System.out.println("Event not found. Try again.");
+        try {
+            System.out.println("Introduce event ID to update:");
+            int id = scanner.nextInt();
             scanner.nextLine();
+
+            Event event = service.findEventById(id);
+            if (event == null) {
+                System.out.println("Event not found.");
+                return;
+            }
+
+            System.out.println("Current event:");
+            System.out.println("  ID: " + event.getId());
+            System.out.println("  Title: " + event.getTitle());
+            System.out.println("  Description: " + event.getDescription());
+            System.out.println("  Date: " + event.getDateTimeEvent());
+            System.out.println("  Recurring: " + (event.isRecurring() ? "Yes" : "No"));
+
+            System.out.println("Do you want to modify the title? (Y/N):");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                System.out.println("Introduce new title:");
+                event.changeTitle(scanner.nextLine());
+            }
+
+            System.out.println("Do you want to modify the description? (Y/N):");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                System.out.println("Introduce new description:");
+                event.changeDescription(scanner.nextLine());
+            }
+
+            System.out.println("Do you want to modify the date? (Y/N):");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                boolean validDate = false;
+                while (!validDate) {
+                    System.out.println("Introduce new date (yyyy-MM-dd HH:mm):");
+                    String dateText = scanner.nextLine();
+                    try {
+                        LocalDateTime newDateTime = LocalDateTime.parse(dateText,
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                        event.changeDateEvent(newDateTime);
+                        validDate = true;
+                    } catch (Exception e) {
+                        System.out.println("Invalid date format. Use the format yyyy-MM-dd HH:mm");
+                    }
+                }
+            }
+
+            System.out.println("Do you want to modify the recurring status? (Y/N):");
+            if (scanner.nextLine().equalsIgnoreCase("y")) {
+                System.out.println("Mark as recurring? (Y/N):");
+                boolean recurring = scanner.nextLine().equalsIgnoreCase("y");
+                event.setRecurring(recurring);
+
+                if (recurring) {
+                    System.out.println("Annual recurring? (Y/N):");
+                    boolean annualRecurring = scanner.nextLine().equalsIgnoreCase("y");
+                    event.setAnnualRecurring(annualRecurring);
+                    if (!annualRecurring) {
+                        System.out.println("Recurrence interval in months:");
+                        event.setRecurrenceInterval(Integer.parseInt(scanner.nextLine()));
+                    }
+                }
+            }
+
+            service.updateEvent(event);
+            System.out.println("Event updated successfully.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void deleteEvent() {
+        try {
+            System.out.println("Introduce event ID to delete:");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            Event event = service.findEventById(id);
+            if (event == null) {
+                System.out.println("Event not found.");
+                return;
+            }
+
+            service.deleteEventById(id);
+            System.out.println("Event deleted.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }

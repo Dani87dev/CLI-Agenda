@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class Event {
 
-    private final int Id;
+    private final int id;
     private String title;
     private String description;
     private LocalDateTime dateTimeEvent;
@@ -12,10 +12,10 @@ public class Event {
     private boolean annualRecurring;
     private int recurrenceInterval;
 
-    public Event(int Id, String title, String description, LocalDateTime dateTimeEvent, boolean recurring, boolean annualRecurring, int recurrenceInterval) {
-        this.Id = Id;
-        this.title = title;
-        this.description = description;
+    public Event(int id, String title, String description, LocalDateTime dateTimeEvent, boolean recurring, boolean annualRecurring, int recurrenceInterval) {
+        this.id = id;
+        changeTitle(title);
+        changeDescription(description);
         this.dateTimeEvent = dateTimeEvent;
         this.recurring = recurring;
         this.annualRecurring = annualRecurring;
@@ -23,15 +23,15 @@ public class Event {
     }
 
     public int getId() {
-        return Id;
-    }
-
-    public String getDescription() {
-        return description;
+        return id;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public LocalDateTime getDateTimeEvent() {
@@ -63,23 +63,20 @@ public class Event {
     }
 
     public void changeTitle(String title) {
-        try {
-            if (title == null) throw new IllegalArgumentException("Title can't be null");
-            if (title.length() >= 100) throw new IllegalArgumentException("Title must be shorter than 100 characters");
-            this.title = title;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        if (title == null) {
+            throw new IllegalArgumentException("Title can't be null.");
         }
+        if (title.length() >= 100) {
+            throw new IllegalArgumentException("Title must be shorter than 100 characters.");
+        }
+        this.title = title;
     }
 
     public void changeDescription(String description) {
-        try {
-            if (description != null && description.length() >= 500)
-                throw new IllegalArgumentException("Description must be shorter than 500 characters");
-            this.description = description;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        if (description != null && description.length() >= 500) {
+            throw new IllegalArgumentException("Description must be shorter than 500 characters.");
         }
+        this.description = description;
     }
 
     public void changeDateEvent(LocalDateTime datetime) {
