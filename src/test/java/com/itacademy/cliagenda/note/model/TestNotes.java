@@ -1,6 +1,5 @@
 package com.itacademy.cliagenda.note.model;
 
-import com.itacademy.cliagenda.task.model.Task;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,105 +7,86 @@ class TestNotes {
 
     @Test
     void testGetId() {
-        Note nota = new Note(1, "Cuerpo de prueba", 1);
-        assertEquals(1, nota.getId());
+        Note note = new Note(1, "Test body", 1);
+        assertEquals(1, note.getId());
     }
 
     @Test
     void testGetBody() {
-        Note nota = new Note(1, "Cuerpo de prueba", 1);
-        assertEquals("Cuerpo de prueba", nota.getBody());
+        Note note = new Note(1, "Test body", 1);
+        assertEquals("Test body", note.getBody());
     }
 
     @Test
-    void testChangeBodyValido() {
-        Note nota = new Note(1, "Cuerpo original", 1);
-        nota.changeBody("Cuerpo actualizado");
-        assertEquals("Cuerpo actualizado", nota.getBody());
+    void testChangeBodyValid() {
+        Note note = new Note(1, "Original body", 1);
+        note.changeBody("Updated body");
+        assertEquals("Updated body", note.getBody());
     }
 
     @Test
-    void testChangeBodyExcedeLongitud() {
-        Note nota = new Note(1, "Cuerpo original", 1);
-        String bodyLargo = "a".repeat(251);
-        nota.changeBody(bodyLargo);
-        assertEquals("Cuerpo original", nota.getBody());
+    void testChangeBodyExceedsLength() {
+        Note note = new Note(1, "Original body", 1);
+        String longBody = "a".repeat(251);
+        assertThrows(IllegalArgumentException.class, () -> note.changeBody(longBody));
+        assertEquals("Original body", note.getBody());
     }
 
     @Test
-    void testConstructorBodyValido() {
-        Note nota = new Note(1, "Cuerpo válido", 1);
-        assertEquals("Cuerpo válido", nota.getBody());
+    void testConstructorValidBody() {
+        Note note = new Note(1, "Valid body", 1);
+        assertEquals("Valid body", note.getBody());
     }
 
     @Test
-    void testConstructorBodyNulo() {
-        Note nota = new Note(1, null, 0);
-        assertNull(nota.getBody());
+    void testConstructorNullBody() {
+        Note note = new Note(1, null, 0);
+        assertNull(note.getBody());
     }
 
     @Test
-    void testConstructorBodyExcedeLongitud() {
-        String bodyLargo = "a".repeat(251);
-        Note nota = new Note(1, bodyLargo, 1);
-        assertNull(nota.getBody());
+    void testConstructorBodyExceedsLength() {
+        String longBody = "a".repeat(251);
+        assertThrows(IllegalArgumentException.class, () -> new Note(1, longBody, 1));
     }
 
     @Test
     void testChangeBodyNull() {
-        Note nota = new Note(1, "Cuerpo original", 1);
-        nota.changeBody(null);
-        assertNull(nota.getBody());
+        Note note = new Note(1, "Original body", 1);
+        note.changeBody(null);
+        assertNull(note.getBody());
     }
 
     @Test
-    void testGetTask_fk() {
-        Note nota = new Note(1, "Cuerpo de prueba", 5);
-        assertEquals(5, nota.getTask_fk());
+    void testGetTaskFk() {
+        Note note = new Note(1, "Test body", 5);
+        assertEquals(5, note.getTask_fk());
     }
 
     @Test
-    void testGetTask_fkDefault() {
-        Note nota = new Note(1, "Cuerpo de prueba", 0);
-        assertEquals(0, nota.getTask_fk());
+    void testGetTaskFkDefault() {
+        Note note = new Note(1, "Test body", 0);
+        assertEquals(0, note.getTask_fk());
     }
 
     @Test
-    void testSetTask_fkValido() {
-        Note nota = new Note(1, "Cuerpo de prueba", 0);
-        Task task = new Task(5, "Tarea prueba");
-        nota.setTask_fk(task);
-        assertEquals(5, nota.getTask_fk());
+    void testSetTaskFkValid() {
+        Note note = new Note(1, "Test body", 0);
+        note.setTask_fk(5);
+        assertEquals(5, note.getTask_fk());
     }
 
     @Test
-    void testSetTask_fkNegativo() {
-        Note nota = new Note(1, "Cuerpo de prueba", 0);
-        Task task = new Task(5, "Tarea prueba");
-        nota.setTask_fk(task);
-        nota.setTask_fk(new Task(-1, "Tarea negativa"));
-        assertEquals(5, nota.getTask_fk());
+    void testSetTaskFkNegative() {
+        Note note = new Note(1, "Test body", 5);
+        assertThrows(IllegalArgumentException.class, () -> note.setTask_fk(-1));
+        assertEquals(5, note.getTask_fk());
     }
 
     @Test
-    void testSetTask_fkCero() {
-        Note nota = new Note(1, "Cuerpo de prueba", 0);
-        nota.setTask_fk(new Task(0, "Tarea cero"));
-        assertEquals(0, nota.getTask_fk());
-    }
-
-    @Test
-    void testConstructorWithTaskObject() {
-        Task task = new Task(5, "Tarea prueba");
-        Note nota = new Note(1, "Cuerpo", task);
-        
-        assertEquals(5, nota.getTask_fk());
-    }
-
-    @Test
-    void testSetTaskWithNullDoesNotThrow() {
-        Note nota = new Note(1, "Cuerpo", 1);
-        Task task = null;
-        nota.setTask_fk(task);
+    void testSetTaskFkZero() {
+        Note note = new Note(1, "Test body", 0);
+        note.setTask_fk(0);
+        assertEquals(0, note.getTask_fk());
     }
 }

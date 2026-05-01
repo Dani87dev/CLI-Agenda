@@ -1,7 +1,7 @@
 package com.itacademy.cliagenda.note.service;
 
 import com.itacademy.cliagenda.note.model.Note;
-import com.itacademy.cliagenda.note.repository.NotesRepository;
+import com.itacademy.cliagenda.note.repository.NoteRepositoryImpl;
 import com.itacademy.cliagenda.testing.TestContainerManager;
 import org.junit.jupiter.api.*;
 
@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestNotesService {
 
     private NotesService notesService;
-    private NotesRepository repo;
 
     @BeforeAll
     static void setUpAll() throws Exception {
@@ -22,8 +21,7 @@ class TestNotesService {
     @BeforeEach
     void setUp() throws Exception {
         TestContainerManager.clearAllTables();
-        repo = new NotesRepository();
-        notesService = new NotesService(repo);
+        notesService = new NotesService(new NoteRepositoryImpl());
     }
 
     @Test
@@ -35,44 +33,44 @@ class TestNotesService {
 
     @Test
     void testCreateNote() {
-        Note note = notesService.createNote("Nueva nota de prueba");
-        
+        Note note = notesService.createNote("New test note", 0);
+
         assertNotNull(note);
-        assertEquals("Nueva nota de prueba", note.getBody());
-        
+        assertEquals("New test note", note.getBody());
+
         List<Note> notes = notesService.getAllNotes();
         assertEquals(1, notes.size());
     }
 
     @Test
     void testDeleteNoteById() {
-        Note note = notesService.createNote("Nota para borrar");
-        
+        Note note = notesService.createNote("Note to delete", 0);
+
         notesService.deleteNoteById(note.getId());
-        
+
         assertNull(notesService.findNoteById(note.getId()));
     }
 
     @Test
     void testUpdateNote() {
-        Note note = notesService.createNote("Nota original");
-        
-        note.changeBody("Nota actualizada");
+        Note note = notesService.createNote("Original note", 0);
+
+        note.changeBody("Updated note");
         notesService.updateNote(note);
-        
+
         Note updated = notesService.findNoteById(note.getId());
         assertNotNull(updated);
-        assertEquals("Nota actualizada", updated.getBody());
+        assertEquals("Updated note", updated.getBody());
     }
 
     @Test
     void testFindNoteById() {
-        Note note = notesService.createNote("Nota buscada");
-        
+        Note note = notesService.createNote("Note to find", 0);
+
         Note found = notesService.findNoteById(note.getId());
-        
+
         assertNotNull(found);
-        assertEquals("Nota buscada", found.getBody());
+        assertEquals("Note to find", found.getBody());
     }
 
     @Test
@@ -82,19 +80,11 @@ class TestNotesService {
     }
 
     @Test
-    void testCreateNoteWithTask() {
-        Note note = notesService.createNote("Nota con tarea", null);
-        
-        assertNotNull(note);
-        assertEquals("Nota con tarea", note.getBody());
-    }
-
-    @Test
     void testGetNotesByTaskId() {
-        Note note1 = notesService.createNote("Nota 1", null);
-        Note note2 = notesService.createNote("Nota 2", null);
-        
-        List<Note> notesWithNoTask = notesService.getNotesByTaskId(0);
-        assertEquals(2, notesWithNoTask.size());
+        notesService.createNote("Note 1", 0);
+        notesService.createNote("Note 2", 0);
+
+        List<Note> notes = notesService.getNotesByTaskId(0);
+        assertEquals(2, notes.size());
     }
 }

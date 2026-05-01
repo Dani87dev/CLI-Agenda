@@ -1,117 +1,103 @@
 package com.itacademy.cliagenda.task.model;
 
-import com.itacademy.cliagenda.event.model.Event;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDateTime;
 
 class TestTask {
 
     @Test
     void testGetId() {
-        Task tarea = new Task(1, "Cuerpo de prueba", 1);
-        assertEquals(1, tarea.getId());
+        Task task = new Task(1, "Test body", 1);
+        assertEquals(1, task.getId());
     }
 
     @Test
     void testGetBody() {
-        Task tarea = new Task(1, "Cuerpo de prueba", 1);
-        assertEquals("Cuerpo de prueba", tarea.getBody());
+        Task task = new Task(1, "Test body", 1);
+        assertEquals("Test body", task.getBody());
     }
 
     @Test
-    void testChangeBodyValido() {
-        Task tarea = new Task(1, "Cuerpo original", 1);
-        tarea.changeBody("Cuerpo actualizado");
-        assertEquals("Cuerpo actualizado", tarea.getBody());
+    void testChangeBodyValid() {
+        Task task = new Task(1, "Original body", 1);
+        task.changeBody("Updated body");
+        assertEquals("Updated body", task.getBody());
     }
 
     @Test
-    void testChangeBodyExcedeLongitud() {
-        Task tarea = new Task(1, "Cuerpo original", 1);
-        String bodyLargo = "a".repeat(251);
-        tarea.changeBody(bodyLargo);
-        assertEquals("Cuerpo original", tarea.getBody());
+    void testChangeBodyExceedsLength() {
+        Task task = new Task(1, "Original body", 1);
+        String longBody = "a".repeat(251);
+        assertThrows(IllegalArgumentException.class, () -> task.changeBody(longBody));
+        assertEquals("Original body", task.getBody());
     }
 
     @Test
-    void testConstructorBodyValido() {
-        Task tarea = new Task(1, "Cuerpo válido", 1);
-        assertEquals("Cuerpo válido", tarea.getBody());
+    void testConstructorValidBody() {
+        Task task = new Task(1, "Valid body", 1);
+        assertEquals("Valid body", task.getBody());
     }
 
     @Test
-    void testConstructorBodyNulo() {
-        Task tarea = new Task(1, null, 0);
-        assertNull(tarea.getBody());
+    void testConstructorNullBody() {
+        Task task = new Task(1, null, 0);
+        assertNull(task.getBody());
     }
 
     @Test
     void testChangeBodyNull() {
-        Task tarea = new Task(1, "Cuerpo original", 1);
-        tarea.changeBody(null);
-        assertNull(tarea.getBody());
+        Task task = new Task(1, "Original body", 1);
+        task.changeBody(null);
+        assertNull(task.getBody());
     }
 
     @Test
-    void testGetEvent_fk() {
-        Task tarea = new Task(1, "Cuerpo de prueba", 5);
-        assertEquals(5, tarea.getEvent_fk());
+    void testGetEventFk() {
+        Task task = new Task(1, "Test body", 5);
+        assertEquals(5, task.getEvent_fk());
     }
 
     @Test
-    void testGetEvent_fkDefault() {
-        Task tarea = new Task(1, "Cuerpo de prueba");
-        assertEquals(0, tarea.getEvent_fk());
+    void testGetEventFkDefault() {
+        Task task = new Task(1, "Test body");
+        assertEquals(0, task.getEvent_fk());
     }
 
     @Test
-    void testSetEvent_fkValido() {
-        Task tarea = new Task(1, "Cuerpo de prueba", 0);
-        Event event = new Event(5, "Evento prueba", "Descripcion", LocalDateTime.of(2025, 6, 15, 10, 0), false, false, 0);
-        tarea.setEvent_fk(event);
-        assertEquals(5, tarea.getEvent_fk());
+    void testSetEventFkValid() {
+        Task task = new Task(1, "Test body", 0);
+        task.setEvent_fk(5);
+        assertEquals(5, task.getEvent_fk());
     }
 
     @Test
-    void testSetEvent_fkNegativo() {
-        Task tarea = new Task(1, "Cuerpo de prueba", 0);
-        Event event = new Event(5, "Evento prueba", "Descripcion", LocalDateTime.of(2025, 6, 15, 10, 0), false, false, 0);
-        tarea.setEvent_fk(event);
-        tarea.setEvent_fk(new Event(-1, "Evento negativo", "Descripcion", LocalDateTime.of(2025, 6, 15, 10, 0), false, false, 0));
-        assertEquals(5, tarea.getEvent_fk());
+    void testSetEventFkNegative() {
+        Task task = new Task(1, "Test body", 5);
+        assertThrows(IllegalArgumentException.class, () -> task.setEvent_fk(-1));
+        assertEquals(5, task.getEvent_fk());
     }
 
     @Test
-    void testSetEvent_fkCero() {
-        Task tarea = new Task(1, "Cuerpo de prueba", 0);
-        Event event = new Event(0, "Evento cero", "Descripcion", LocalDateTime.of(2025, 6, 15, 10, 0), false, false, 0);
-        tarea.setEvent_fk(event);
-        assertEquals(0, tarea.getEvent_fk());
+    void testSetEventFkZero() {
+        Task task = new Task(1, "Test body", 0);
+        task.setEvent_fk(0);
+        assertEquals(0, task.getEvent_fk());
     }
 
     @Test
-    void testConstructorWithEventObject() {
-        Event event = new Event(5, "Evento prueba", "Descripcion", LocalDateTime.of(2025, 6, 15, 10, 0), false, false, 0);
-        Task tarea = new Task(1, "Cuerpo", event);
-        
-        assertEquals(5, tarea.getEvent_fk());
+    void testConstructorTwoParams() {
+        Task task = new Task(1, "Simple task");
+        assertEquals(1, task.getId());
+        assertEquals("Simple task", task.getBody());
+        assertEquals(0, task.getEvent_fk());
+        assertFalse(task.isCompleted());
     }
 
     @Test
-    void testSetEvent_fkWithNullDoesNotThrow() {
-        Task tarea = new Task(1, "Cuerpo", 1);
-        Event event = null;
-        tarea.setEvent_fk(event);
-    }
-
-    @Test
-    void testConstructorDosParametros() {
-        Task tarea = new Task(1, "Tarea simple");
-        
-        assertEquals(1, tarea.getId());
-        assertEquals("Tarea simple", tarea.getBody());
-        assertEquals(0, tarea.getEvent_fk());
+    void testSetCompleted() {
+        Task task = new Task(1, "Task", 0);
+        assertFalse(task.isCompleted());
+        task.setCompleted(true);
+        assertTrue(task.isCompleted());
     }
 }

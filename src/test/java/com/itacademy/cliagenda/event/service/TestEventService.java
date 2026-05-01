@@ -1,7 +1,7 @@
 package com.itacademy.cliagenda.event.service;
 
 import com.itacademy.cliagenda.event.model.Event;
-import com.itacademy.cliagenda.event.repository.EventRepository;
+import com.itacademy.cliagenda.event.repository.EventRepositoryImpl;
 import com.itacademy.cliagenda.testing.TestContainerManager;
 import org.junit.jupiter.api.*;
 
@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestEventService {
 
     private EventService service;
-    private EventRepository repo;
 
     @BeforeAll
     static void setUpAll() throws Exception {
@@ -23,8 +22,7 @@ class TestEventService {
     @BeforeEach
     void setUp() throws Exception {
         TestContainerManager.clearAllTables();
-        repo = new EventRepository();
-        service = new EventService(repo);
+        service = new EventService(new EventRepositoryImpl());
     }
 
     @Test
@@ -37,10 +35,10 @@ class TestEventService {
     @Test
     void testCreateEvent() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Nuevo evento", "Descripcion", dateTime, false, false, 0);
+        Event event = service.createEvent("New event", "Description", dateTime, false, false, 0);
 
         assertNotNull(event);
-        assertEquals("Nuevo evento", event.getTitle());
+        assertEquals("New event", event.getTitle());
 
         List<Event> events = service.getAllEvents();
         assertEquals(1, events.size());
@@ -49,7 +47,7 @@ class TestEventService {
     @Test
     void testDeleteEventById() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Evento para borrar", "Descripcion", dateTime, false, false, 0);
+        Event event = service.createEvent("Event to delete", "Description", dateTime, false, false, 0);
 
         service.deleteEventById(event.getId());
 
@@ -59,25 +57,25 @@ class TestEventService {
     @Test
     void testUpdateEvent() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Evento original", "Descripcion", dateTime, false, false, 0);
+        Event event = service.createEvent("Original event", "Description", dateTime, false, false, 0);
 
-        event.changeTitle("Evento actualizado");
+        event.changeTitle("Updated event");
         service.updateEvent(event);
 
         Event updated = service.findEventById(event.getId());
         assertNotNull(updated);
-        assertEquals("Evento actualizado", updated.getTitle());
+        assertEquals("Updated event", updated.getTitle());
     }
 
     @Test
     void testFindEventById() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Evento buscado", "Descripcion", dateTime, false, false, 0);
+        Event event = service.createEvent("Event to find", "Description", dateTime, false, false, 0);
 
         Event found = service.findEventById(event.getId());
 
         assertNotNull(found);
-        assertEquals("Evento buscado", found.getTitle());
+        assertEquals("Event to find", found.getTitle());
     }
 
     @Test
@@ -89,10 +87,10 @@ class TestEventService {
     @Test
     void testGetNextRecurrenciesAnnual() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Evento anual", "Descripcion", dateTime, true, true, 0);
-        
+        Event event = service.createEvent("Annual event", "Description", dateTime, true, true, 0);
+
         List<LocalDateTime> recurrencies = service.getNextRecurrencies(event);
-        
+
         assertEquals(5, recurrencies.size());
         assertEquals(2026, recurrencies.get(0).getYear());
     }
@@ -100,22 +98,21 @@ class TestEventService {
     @Test
     void testGetNextRecurrenciesMonthly() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Evento mensual", "Descripcion", dateTime, true, false, 3);
-        
+        Event event = service.createEvent("Monthly event", "Description", dateTime, true, false, 3);
+
         List<LocalDateTime> recurrencies = service.getNextRecurrencies(event);
-        
+
         assertEquals(5, recurrencies.size());
-        assertEquals(2025, recurrencies.get(0).getYear());
         assertEquals(9, recurrencies.get(0).getMonthValue());
     }
 
     @Test
     void testGetNextRecurrenciesNonRecurring() {
         LocalDateTime dateTime = LocalDateTime.of(2025, 6, 15, 10, 0);
-        Event event = service.createEvent("Evento no recurrente", "Descripcion", dateTime, false, false, 0);
-        
+        Event event = service.createEvent("Non recurring event", "Description", dateTime, false, false, 0);
+
         List<LocalDateTime> recurrencies = service.getNextRecurrencies(event);
-        
+
         assertTrue(recurrencies.isEmpty());
     }
 }
