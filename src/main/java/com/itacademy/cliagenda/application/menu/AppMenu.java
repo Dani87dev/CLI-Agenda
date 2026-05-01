@@ -1,13 +1,13 @@
 package com.itacademy.cliagenda.application.menu;
 
 import com.itacademy.cliagenda.event.cli.EventCli;
-import com.itacademy.cliagenda.event.repository.EventRepository;
+import com.itacademy.cliagenda.event.repository.EventRepositoryImpl;
 import com.itacademy.cliagenda.event.service.EventService;
 import com.itacademy.cliagenda.note.cli.NoteCli;
-import com.itacademy.cliagenda.note.repository.NotesRepository;
+import com.itacademy.cliagenda.note.repository.NoteRepositoryImpl;
 import com.itacademy.cliagenda.note.service.NotesService;
 import com.itacademy.cliagenda.task.cli.TaskCli;
-import com.itacademy.cliagenda.task.repository.TaskRepository;
+import com.itacademy.cliagenda.task.repository.TaskRepositoryImpl;
 import com.itacademy.cliagenda.task.service.TaskService;
 
 import java.util.Scanner;
@@ -17,16 +17,11 @@ public class AppMenu {
     Scanner scanner = new Scanner(System.in);
     int userOption = -1;
 
-    EventRepository eventRepo = new EventRepository();
-    EventService eventService = new EventService(eventRepo);
+    EventService eventService = new EventService(new EventRepositoryImpl());
+    TaskService taskService = new TaskService(new TaskRepositoryImpl());
+    NotesService notesService = new NotesService(new NoteRepositoryImpl());
 
-    TaskRepository taskRepo = new TaskRepository();
-    TaskService taskService = new TaskService(taskRepo);
-
-    NotesRepository notesRepo = new NotesRepository();
-    NotesService notesService = new NotesService(notesRepo);
     NoteCli noteCli = new NoteCli(notesService, taskService);
-
     TaskCli taskCli = new TaskCli(taskService, notesService, eventService);
     EventCli eventCli = new EventCli(eventService, taskService);
 
