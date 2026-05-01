@@ -28,8 +28,7 @@ public class Task {
         this.completed = completed;
     }
 
-    //Usar este constructor para cuando haya que recrear los objetos Task desde la base de datos.
-    //o bien para cuando se creen con fk
+
     public Task(int id, String body, Event event) {
         Id = id;
         this.body = body;
