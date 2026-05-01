@@ -1,46 +1,34 @@
 package com.itacademy.cliagenda.task.model;
 
-import com.itacademy.cliagenda.event.model.Event;
-
 public class Task {
-    private final int Id;
+    private final int id;
     private String body;
     private int event_fk;
     private boolean completed;
 
     public Task(int id, String body) {
-        Id = id;
-        this.body = body;
+        this.id = id;
+        changeBody(body);
+        this.event_fk = 0;
         this.completed = false;
     }
 
     public Task(int id, String body, int event_fk) {
-        Id = id;
-        this.body = body;
+        this.id = id;
+        changeBody(body);
         this.event_fk = event_fk;
         this.completed = false;
     }
 
     public Task(int id, String body, int event_fk, boolean completed) {
-        Id = id;
-        this.body = body;
+        this.id = id;
+        changeBody(body);
         this.event_fk = event_fk;
         this.completed = completed;
     }
 
-
-    public Task(int id, String body, Event event) {
-        Id = id;
-        this.body = body;
-        int event_fk = event.getId();
-        if (event_fk != 0) {
-            this.event_fk = event_fk;
-        }
-        this.completed = false;
-    }
-
     public int getId() {
-        return Id;
+        return id;
     }
 
     public String getBody() {
@@ -48,35 +36,19 @@ public class Task {
     }
 
     public void changeBody(String body) {
-        try {
-            if (body != null && body.length() > 250) {
-                throw new IllegalArgumentException("La petición de escribir una nota no se ha realizado por ser excesivamente largo.");
-            }
-            this.body = body;
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        if (body != null && body.length() > 250) {
+            throw new IllegalArgumentException("Task body must be shorter than 250 characters.");
         }
+        this.body = body;
     }
 
     public int getEvent_fk() {
         return event_fk;
     }
 
-    public void setEvent_fk(Event event) {
-        try {
-            if (event.getId() < 0) {
-                throw new IllegalArgumentException("El valor proporcionado para event_fk no es válido.");
-            }
-            this.event_fk = event.getId();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
     public void setEvent_fk(int event_fk) {
         if (event_fk < 0) {
-            System.err.println("El valor proporcionado para event_fk no es válido.");
-            return;
+            throw new IllegalArgumentException("Event ID cannot be negative.");
         }
         this.event_fk = event_fk;
     }

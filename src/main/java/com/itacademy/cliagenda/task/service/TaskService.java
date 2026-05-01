@@ -1,76 +1,59 @@
 package com.itacademy.cliagenda.task.service;
 
-import com.itacademy.cliagenda.event.model.Event;
-import com.itacademy.cliagenda.infrastructure.sql.dao.SqlDao;
 import com.itacademy.cliagenda.task.model.Task;
-import com.itacademy.cliagenda.task.repository.TaskRepository;
+import com.itacademy.cliagenda.task.repository.ITaskRepository;
 
 import java.util.List;
 
 public class TaskService {
 
-    private final TaskRepository repo;
-    private final SqlDao dao;
+    private final ITaskRepository repo;
 
-    public TaskService(TaskRepository repo) {
+    public TaskService(ITaskRepository repo) {
         this.repo = repo;
-        this.dao = SqlDao.getInstance();
-        List<Task> tasksFromDb = dao.findAllTasks();
-        repo.addTasks(tasksFromDb);
     }
 
     public Task createTask(String body) {
-        return createTask(body, null);
-    }
-
-    public Task createTask(String body, Event event_fk) {
         int id = generateNextId();
-        int eventFk = event_fk != null ? event_fk.getId() : 0;
-        Task newTask = new Task(id, body, eventFk);
-        dao.saveTask(newTask);
-        repo.addIndividualTask(newTask);
+        Task newTask = new Task(id, body);
+        repo.save(newTask);
         return newTask;
     }
 
     public List<Task> getAllTasks() {
-        return repo.getTasks();
+        return repo.findAll();
     }
 
     public Task findTaskById(int id) {
-        return repo.getTaskById(id);
+        return repo.findById(id);
     }
 
     public void deleteTaskById(int id) {
-        dao.deleteTask(id);
-        repo.removeTaskById(id);
+        repo.deleteById(id);
     }
 
     public void updateTask(Task task) {
-        dao.updateTask(task);
-        repo.removeTaskById(task.getId());
-        repo.addIndividualTask(task);
+        repo.update(task);
     }
 
     public List<Task> getTasksByCompleted(boolean completed) {
-        return repo.getTasksByCompleted(completed);
-    }
-
-    public void markTaskCompleted(int id, boolean completed) {
-        Task task = repo.getTaskById(id);
-        if (task != null) {
-            task.setCompleted(completed);
-            dao.updateTask(task);
-            repo.removeTaskById(id);
-            repo.addIndividualTask(task);
-        }
+        return repo.findByCompleted(completed);
     }
 
     public List<Task> getTasksByEventId(int eventId) {
-        return repo.getTaskByEventFK(eventId);
+        return repo.findByEventId(eventId);
     }
 
-    int generateNextId() {
-        List<Task> tasks = repo.getTasks();
+    public void markTaskCompleted(int id, boolean completed) {
+        Task task = repo.findById(id);
+        if (task != null) {
+            task.setCompleted(completed);
+            repo.update(task);
+        }
+    }
+
+    private int generateNextId() {
+        List<Task> tasks = repo.findAll();
         int maxId = 0;
         for (Task task : tasks) {
             if (task.getId() > maxId) {
