@@ -1,5 +1,4 @@
 # CLI-Agenda
-
 CLI-Agenda is a console application written in Java that allows you to manage tasks, notes, and events directly from the terminal.
 
 ---
@@ -26,7 +25,6 @@ CLI-Agenda is a console application written in Java that allows you to manage ta
 ---
 
 ## Prerequisites
-
 - Java 17 or higher
 - Docker and Docker Compose
 - Maven 3.x
@@ -36,29 +34,23 @@ CLI-Agenda is a console application written in Java that allows you to manage ta
 ## Usage Instructions
 
 ### 1. Build the project
-
 ```bash
 mvn clean package
 ```
-
 This will generate the file `target/CLI-agenda-1.0-jar-with-dependencies.jar`.
 
 ### 2. Start the MySQL database
-
 ```bash
 docker-compose up -d mysql
 ```
-
 The MySQL container will start on port 3306 with data persistence.
 
 ### 3. Run the application
-
 ```bash
 java -jar target/CLI-agenda-1.0-jar-with-dependencies.jar
 ```
 
 ### 4. Stop the database (optional)
-
 ```bash
 docker-compose down
 ```
@@ -102,7 +94,6 @@ docker-compose down
 ---
 
 ## Technologies Used
-
 - Java — main language
 - JDBC — database connection
 - Docker — database deployment
@@ -113,16 +104,14 @@ docker-compose down
 ---
 
 ## Architecture
-
-- Design patterns: Singleton, Repository
-- SOLID principles
+- Design patterns: Singleton (ConnectionManager), Repository (interfaces + SQL implementation)
+- SOLID principles applied: Single Responsibility, Dependency Inversion
 - Separate structure by functionality (events, tasks, notes)
-- Use of Optional to avoid NullPointerException
+- Exception propagation from model/repository up to CLI for error traceability
 
 ---
 
 ## Project Structure
-
 ```
 src/
 ├── main/java/com/itacademy/cliagenda/
@@ -130,26 +119,14 @@ src/
 │   ├── event/             # Event management (model, service, repository, cli)
 │   ├── task/              # Task management (model, service, repository, cli)
 │   ├── note/              # Note management (model, service, repository, cli)
-│   ├── infrastructure/    # Data access (SQL DAO)
+│   ├── infrastructure/    # Database connection (ConnectionManager)
 │   └── common/            # Shared utilities
 └── test/                  # Unit tests
 ```
-
----
-
-## Working Branches
-
-- `main` — stable branch, ready for production
-- `dev` — development branch where features are integrated
-- `feature/*` / `docs/*` / `chore/*` — individual working branches
-
-Each feature is developed on its own branch and integrated into `dev` through Pull Requests reviewed by the team.
-
 ---
 
 ## COPYRIGHT and LICENSE
-
-Copyright 2026 Ulises Lafuente, Daniel Vila
+Copyright 2025 Ulises Lafuente, Daniel Vila
 
 CLI-Agenda is free software; you can redistribute it and/or modify it under the terms of the Apache License 2.0.
 
